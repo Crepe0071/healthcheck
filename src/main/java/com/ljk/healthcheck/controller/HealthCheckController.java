@@ -18,18 +18,28 @@ public class HealthCheckController {
 
 	@PostMapping("/up")
 	public void up(ServerHttpRequest request) {
-		String url =
-			request.getURI().getScheme() + "://" + request.getURI().getHost() + ":" + request.getURI().getPort();
+		String url = getUrl(request);
 		AVAILABLE_SERVERS.get("up").add(url);
 		AVAILABLE_SERVERS.get("down").remove(url);
 	}
 
 	@PostMapping("/down")
 	public void down(ServerHttpRequest request) {
-		String url =
-			request.getURI().getScheme() + "://" + request.getURI().getHost() + ":" + request.getURI().getPort();
+		String url = getUrl(request);
 		AVAILABLE_SERVERS.get("up").remove(url);
 		AVAILABLE_SERVERS.get("down").add(url);
+	}
+
+	private String getUrl(ServerHttpRequest request) {
+		int port;
+		String scheme = request.getURI().getScheme();
+		boolean isHttp = scheme.length() == 4;
+		if (request.getURI().getPort() == -1) {
+			port = isHttp ? 80 : 443;
+		} else {
+			port = request.getURI().getPort();
+		}
+		return scheme + "://" + request.getURI().getHost() + ":" + port;
 	}
 
 }
