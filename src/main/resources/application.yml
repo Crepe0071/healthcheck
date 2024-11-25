@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: health-check
+
+server:
+  port: 80
